@@ -50,11 +50,14 @@ public class Flock : MonoBehaviour
     #region Default
     void Start()
     {
+        #region Square Setups
         //set up the squared values to be correct
         squareMaxSpeed = maxSpeed * maxSpeed; //max speed
         squareNeighbourRadius = neighbourRadius * neighbourRadius; //neighbourRadius
         squareAvoidanceRadius = squareNeighbourRadius * avoidanceRadiusMultiplier * avoidanceRadiusMultiplier; //avoidance radius (kinda). 0.5 times bigger than neighbourRadius
+        #endregion
 
+        #region Setup each agent
         for (int i = 0; i < startingCount; i++) //For each agent in our flock
         {
             FlockAgent newAgent = Instantiate(agentPrefab, Random.insideUnitCircle * startingCount * AgentDensity, Quaternion.Euler(Vector3.forward * Random.Range(0f, 360f)), transform); //Create an agent prefab object within the scene at the correct position
@@ -62,14 +65,17 @@ public class Flock : MonoBehaviour
             newAgent.name = "Agent " + 1; //Name it to its numarical correspondance
             agents.Add(newAgent); //Add a new agent to the list of agents for use later
         }
+        #endregion
     }
 
     private void Update()
     {
         foreach (FlockAgent agent in agents) //For each FlockAgent within the list of all the agents (set up within the Start method)
         {
+            #region Context Setup
             context = GetNearbyObjects(agent, neighbourRadius); //The context is the objects within the neighbourhood radius of the agent
             areaContext = GetNearbyObjects(agent, areaRadius); //The area context is the objects within the area radius of the agent
+            #endregion
 
             #region Color Changing
             if (colorChangeState == ColorChangeState.Single) //If we want to use a single color
@@ -78,41 +84,45 @@ public class Flock : MonoBehaviour
             }
             else if (colorChangeState == ColorChangeState.Gradient) //If we want a gradient effect
             {
-                agent.GetComponent<SpriteRenderer>().color = Color.Lerp(startColor, fadeToColor, context.Count / colorLerpDivider);
+                agent.GetComponent<SpriteRenderer>().color = Color.Lerp(startColor, fadeToColor, context.Count / colorLerpDivider); //Fade between the two colors using the divider value as our time argument
             }
             #endregion
 
-            Vector2 move = behaviour.CalculateMove(agent, context, areaContext, this);
-            move *= driveFactor;
-            if (move.sqrMagnitude > squareMaxSpeed)
+            #region Movement
+            Vector2 move = behaviour.CalculateMove(agent, context, areaContext, this); //Calculate the agents movements for this frame and set move to its value
+            move *= driveFactor; //Multiply the movements by the drive factor
+            if (move.sqrMagnitude > squareMaxSpeed) //if the moves squared magnitude is greater than the squared max speed
             {
-                if (randomiseSpeed)
+                if (randomiseSpeed) //if we want to randomise the speed
                 {
-                    float tempSpeedRandomiser = Random.Range(maxSpeed / 4, maxSpeed / 2);
-                    move = move.normalized * (maxSpeed + tempSpeedRandomiser);
+                    float tempSpeedRandomiser = Random.Range(maxSpeed / 4, maxSpeed / 2); //set the temp speed to a random speed
+                    move = move.normalized * (maxSpeed + tempSpeedRandomiser); //the move is set to a normalized value then mutliplied by the max speed plus our random speed
                 }
-                else
-                    move = move.normalized * maxSpeed;
+                else //otherwise
+                    move = move.normalized * maxSpeed; //the move is set to a normalized value then mutliplied by the max speed (no randomising)
             }
-            agent.Move(move);
+            agent.Move(move); //apply the movement to the agent
+            #endregion
         }
     }
     #endregion
 
-    List<Transform> GetNearbyObjects(FlockAgent agent, float radius)
+    #region Context Calculations
+    List<Transform> GetNearbyObjects(FlockAgent agent, float radius) //Get the nearby objects in relation to the parameters
     {
-        List<Transform> context = new List<Transform>();
-        Collider2D[] contextColliders = Physics2D.OverlapCircleAll(agent.transform.position, radius);
+        List<Transform> context = new List<Transform>(); //Make a new list called context
+        Collider2D[] contextColliders = Physics2D.OverlapCircleAll(agent.transform.position, radius); //Make an array of collider 2Ds and set them to a circle at the agents position and the radius parameter
 
-        foreach (Collider2D contextCollider in contextColliders)
+        foreach (Collider2D contextCollider in contextColliders) //For all of the colliders within our array of colliders
         {
-            if (contextCollider != agent.AgentCollider)
+            if (contextCollider != agent.AgentCollider) //If the created collider isnt the same as the agents collider
             {
-                context.Add(contextCollider.transform);
+                context.Add(contextCollider.transform); //Add the context collider we created to the context list
             }
         }
-        return context;
+        return context; //Return the list context which contains our transforms
     }
+    #endregion
 }
 
 public enum ColorChangeState
