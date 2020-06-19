@@ -16,10 +16,10 @@ MonoBehaviour:
   - behaviour: {fileID: 11400000, guid: d8a15a5416ec908469ce51a749fd2dd5, type: 2}
     weight: 1
   - behaviour: {fileID: 11400000, guid: c46f1e8665624a749822faa5063b3782, type: 2}
-    weight: 1
+    weight: 1.5
   - behaviour: {fileID: 11400000, guid: bc28bf8ef94a0de40a103fbfbbf9799c, type: 2}
     weight: 1
   - behaviour: {fileID: 11400000, guid: 56320aecbc7ebc342b136f67cb65d107, type: 2}
     weight: 0.25
   - behaviour: {fileID: 11400000, guid: 966c22ddefa2550478d91e79e8a61b39, type: 2}
-    weight: 20
+    weight: 2

@@ -7,6 +7,8 @@ public class Options : MonoBehaviour
     public GameObject predator;
     public GameObject prey;
 
+    public GameObject explanation;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -25,5 +27,19 @@ public class Options : MonoBehaviour
         isPrey = !isPrey;
 
         prey.SetActive(!isPrey);
+    }
+
+    public void ExplanationShow(bool isShowing)
+    {
+        isShowing = !isShowing;
+
+        if (!isShowing)
+        {
+            explanation.SetActive(true);
+        }
+        else
+        {
+            explanation.SetActive(false);
+        }
     }
 }

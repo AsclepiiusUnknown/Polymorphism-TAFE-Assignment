@@ -8,27 +8,26 @@ public class PredatorStateMachine : Life
     #region Variables
     public enum PredatorStates
     {
-        Wander,
-        Seek,
+        WanderSeek,
         Attack,
-        CollisionAvoidance,
         OffsetPursuit
         //Search. Taken out due to ambuity between Search and Seek, authorised by Andrew on 11/06/20
     }
+    [Header("Prepare Attack Timer")]
+    public float prepareAttackTimeValue = 5;
+    private float prepareAttackTimer;
+    private bool isAttacking;
 
-    [Header("Predator Variables")]
-    public float attackDamage = 10;
-
+    [Header("Max Attack Timer")]
+    public float maxAttackTimeValue = 5;
+    private float maxAttackTimer;
 
     [Header("State Machine Variables")]
     public PredatorStates predatorState;
-    //public bool ChangeState = false;//
 
     [Header("Behaviour Objects")]
-    [SerializeField] private FlockBehaviour WanderBehaviour;
-    [SerializeField] private FlockBehaviour SeekBehaviour;
+    [SerializeField] private FlockBehaviour WanderSeekBehaviour;
     [SerializeField] private FlockBehaviour AttackBehaviour;
-    [SerializeField] private FlockBehaviour ColAvoidanceBehaviour;
     [SerializeField] private FlockBehaviour OffsetPursuitBehaviour;
     #endregion
 
@@ -37,6 +36,8 @@ public class PredatorStateMachine : Life
     protected override void Start()
     {
         base.Start();
+
+        isAttacking = false;
 
         #region Debugging
         if (GetComponent<Flock>() != null && flock == null)
@@ -50,36 +51,49 @@ public class PredatorStateMachine : Life
         }
         #endregion
 
-        ChangeStateTo(predatorState.ToString());
+        ChangeStateTo(PredatorStates.WanderSeek.ToString());
     }
     void Update()
     {
         stateDisplay.text = predatorState.ToString();
+
+        if (!isAttacking && predatorState == PredatorStates.OffsetPursuit)
+        {
+            prepareAttackTimer -= Time.deltaTime;
+        }
+
+        if (isAttacking && predatorState == PredatorStates.Attack)
+        {
+            maxAttackTimer -= Time.deltaTime;
+        }
+
+        if (maxAttackTimer <= 0)
+        {
+            isAttacking = false;
+            predatorState = PredatorStates.WanderSeek;
+            ChangeStateTo(PredatorStates.WanderSeek.ToString());
+            maxAttackTimer = maxAttackTimeValue;
+        }
     }
     #endregion
 
     #region Predator Functionality
-    public void DamageEnemy(PreyStateMachine prey)
+    public void KillEnemy(FlockAgent prey)
     {
-        prey.TakeDamage(attackDamage);
-
-        if (prey.useHurtColor)
-        {
-            prey.PlayHurtColorEffectVoid(prey.gameObject.GetComponent<SpriteRenderer>(), 3, 1);
-        }
+        prey.Die();
     }
     #endregion
 
     #region Sate Machine Functionality
 
-    #region Wander
-    public IEnumerator WanderState()
+    #region Wander Seek
+    public IEnumerator WanderSeekState()
     {
         Debug.Log("Wander: ENTER");
 
-        flock.behaviour = WanderBehaviour;
+        flock.behaviour = WanderSeekBehaviour;
 
-        while (predatorState == PredatorStates.Wander)
+        while (predatorState == PredatorStates.WanderSeek)
         {
             foreach (FlockAgent agent in flock.agents)
             {
@@ -87,11 +101,11 @@ public class PredatorStateMachine : Life
 
                 if (filteredContext.Count > 0)
                 {
-                    predatorState = PredatorStates.Seek;
+                    predatorState = PredatorStates.OffsetPursuit;
                 }
             }
 
-            yield return null;      ///2:24:24///
+            yield return null;
         }
 
         Debug.Log("Wander: EXIT");
@@ -99,42 +113,79 @@ public class PredatorStateMachine : Life
     }
     #endregion
 
-    #region Seek
-    public IEnumerator SeekState()
+    #region Attack
+    public IEnumerator AttackState()
     {
-        Debug.Log("Seek: ENTER");
+        Debug.Log("Attack: ENTER");
 
-        while (predatorState == PredatorStates.Seek)
+        flock.behaviour = AttackBehaviour;
+
+        prepareAttackTimer = prepareAttackTimeValue;
+        isAttacking = true;
+        maxAttackTimer = maxAttackTimeValue;
+
+        while (predatorState == PredatorStates.Attack)
         {
-            if (flock.behaviour != SeekBehaviour)
+            foreach (FlockAgent agent in flock.agents)
             {
-                flock.behaviour = SeekBehaviour;
+                List<Transform> filteredContext = (contextFilter == null) ? flock.areaContext : contextFilter.Filter(agent, flock.areaContext);
+
+                if (filteredContext.Count <= 0)
+                {
+                    isAttacking = false;
+                    predatorState = PredatorStates.WanderSeek;
+                    // ChangeStateTo("WanderSeek");
+                }
             }
 
             yield return null;
         }
 
-        Debug.Log("Seek: EXIT");
+        Debug.Log("Attack: EXIT");
         ChangeStateTo(predatorState.ToString());
     }
     #endregion
 
-    #region Attack
-
-    #endregion
-
-    #region Collision Avoidance
-
-    #endregion
-
     #region Offset Pursuit
+    public IEnumerator OffsetPursuitState()
+    {
+        Debug.Log("Offset Pursuit: ENTER");
 
+        flock.behaviour = OffsetPursuitBehaviour;
+
+        prepareAttackTimer = prepareAttackTimeValue;
+
+        while (predatorState == PredatorStates.OffsetPursuit)
+        {
+            foreach (FlockAgent agent in flock.agents)
+            {
+                List<Transform> filteredContext = (contextFilter == null) ? flock.areaContext : contextFilter.Filter(agent, flock.areaContext);
+
+                if (filteredContext.Count <= 0)
+                {
+                    predatorState = PredatorStates.WanderSeek;
+                    // ChangeStateTo("WanderSeek");
+                }
+            }
+
+            if (prepareAttackTimer <= 0 && !isAttacking)
+            {
+                predatorState = PredatorStates.Attack;
+                // ChangeStateTo("Attack");
+            }
+
+            yield return null;
+        }
+
+        Debug.Log("Offset Pursuit: EXIT");
+        ChangeStateTo(predatorState.ToString());
+    }
     #endregion
 
     #region State Changing
-    void ChangeStateTo(string methodName)
+    protected void ChangeStateTo(string methodName)
     {
-        StartCoroutine(methodName + "State"); //change the state to the passed value plus "State"
+        StartCoroutine(methodName + "State"); //change the State to the passed value plus "State"
     }
     #endregion
     #endregion

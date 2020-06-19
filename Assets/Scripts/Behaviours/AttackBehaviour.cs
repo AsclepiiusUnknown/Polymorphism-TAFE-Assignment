@@ -20,10 +20,10 @@ public class AttackBehaviour : FilteredFlockBehaviour
 
         foreach (Transform item in areaFilteredContext)
         {
-            if (item.GetComponent<PreyStateMachine>() != null)
+            if (item.gameObject.GetComponent<PreyStateMachine>() != null)
             {
-                PreyStateMachine itemPrey = item.GetComponent<PreyStateMachine>();
-                thisPredator.DamageEnemy(itemPrey);
+                FlockAgent itemPrey = item.GetComponent<FlockAgent>();
+                thisPredator.KillEnemy(itemPrey);
             }
 
             float distance = Vector2.Distance(item.position, agent.transform.position);

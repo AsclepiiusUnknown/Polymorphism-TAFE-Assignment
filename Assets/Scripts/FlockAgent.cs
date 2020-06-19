@@ -36,5 +36,10 @@ public class FlockAgent : MonoBehaviour
         transform.up = velocity; //Set the velocity up
         transform.position += (Vector3)velocity * Time.deltaTime; //Move the agent in the passed parameter
     }
+
+    public void Die()
+    {
+        Destroy(this.gameObject);
+    }
     #endregion
 }

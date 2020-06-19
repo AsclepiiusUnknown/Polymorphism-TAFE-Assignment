@@ -21,10 +21,14 @@ public class Life : MonoBehaviour
     public TextMeshProUGUI stateDisplay;
     #endregion
 
+    #region Default
     protected virtual void Start()
     {
         health = maxHealth;
     }
+    #endregion
+
+
 
     #region Testing - REMOVE LATER!!!
     public int Method1(string input)

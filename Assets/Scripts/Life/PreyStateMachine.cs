@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 [RequireComponent(typeof(Flock))]
 public class PreyStateMachine : Life
@@ -9,10 +9,8 @@ public class PreyStateMachine : Life
     #region Variables
     public enum PreyStates
     {
-        Flock,
-        Wander,
-        Evade,
-        Hide,
+        FlockWander,
+        EvadeHide
     }
 
     [Header("Prey Variables")]
@@ -21,13 +19,10 @@ public class PreyStateMachine : Life
 
     [Header("State Machine Variables")]
     public PreyStates preyState;
-    //public bool ChangeState = false;//
 
     [Header("Behaviour Objects")]
-    [SerializeField] private FlockBehaviour FlockBehaviour;
-    [SerializeField] private FlockBehaviour WanderBehaviour;
-    [SerializeField] private FlockBehaviour EvadeBehaviour;
-    [SerializeField] private FlockBehaviour HideBehaviour;
+    [SerializeField] private FlockBehaviour FlockWanderBehaviour;
+    [SerializeField] private FlockBehaviour EvadeHideBehaviour;
     #endregion
 
     #region Default
@@ -47,8 +42,10 @@ public class PreyStateMachine : Life
         }
         #endregion
 
-        ChangeStateTo(preyState.ToString());
+        ChangeStateTo(PreyStates.FlockWander.ToString());
+
     }
+
     void Update()
     {
         stateDisplay.text = preyState.ToString();
@@ -56,16 +53,10 @@ public class PreyStateMachine : Life
     #endregion
 
     #region Prey Functionality
-    public void TakeDamage(float damage)
-    {
-        health -= damage;
-    }
-
     public void PlayHurtColorEffectVoid(SpriteRenderer renderer, int repeatAmount, float waitTime)
     {
         PlayHurtColorEffect(renderer, repeatAmount, waitTime);
     }
-
 
     public IEnumerator PlayHurtColorEffect(SpriteRenderer renderer, int repeatAmount, float waitTime)
     {
@@ -81,19 +72,16 @@ public class PreyStateMachine : Life
     #endregion
 
     #region State Machine Functionality
-    ///
-
-    #region Flock
-    public IEnumerator FlockState()
+    // * //
+    #region Flock/Wander
+    public IEnumerator FlockWanderState()
     {
-        Debug.Log("Flock: ENTER");
+        Debug.Log("Flock/Wander: ENTER");
 
-        preyState = PreyStates.Flock;
-        flock.behaviour = FlockBehaviour;
+        preyState = PreyStates.FlockWander;
+        flock.behaviour = FlockWanderBehaviour;
 
-        StartCoroutine("DelayStateChangeFW");
-
-        while (preyState == PreyStates.Flock)
+        while (preyState == PreyStates.FlockWander)
         {
             foreach (FlockAgent agent in flock.agents)
             {
@@ -101,61 +89,28 @@ public class PreyStateMachine : Life
 
                 if (filteredContext.Count > 0)
                 {
-                    StopCoroutine("DelayStateChangeFW");
-                    ChangeStateTo("Evade");
-                    preyState = PreyStates.Evade;
+                    preyState = PreyStates.EvadeHide;
+                    ChangeStateTo(PreyStates.EvadeHide.ToString());
+                    yield return null;
                 }
             }
 
             yield return null;
         }
 
-        Debug.Log("Flock: EXIT");
+        Debug.Log("Flock/Wander: EXIT");
     }
     #endregion
 
-    #region Wander
-    public IEnumerator WanderState()
+    #region Evade/Hide
+    public IEnumerator EvadeHideState()
     {
-        Debug.Log("Wander: ENTER");
+        Debug.Log("Evade/Hide: ENTER");
 
-        preyState = PreyStates.Wander;
-        flock.behaviour = WanderBehaviour;
+        preyState = PreyStates.EvadeHide;
+        flock.behaviour = EvadeHideBehaviour;
 
-        StartCoroutine("DelayStateChangeFW");
-
-        while (preyState == PreyStates.Wander)
-        {
-            foreach (FlockAgent agent in flock.agents)
-            {
-                List<Transform> filteredContext = (contextFilter == null) ? flock.areaContext : contextFilter.Filter(agent, flock.areaContext);
-
-                if (filteredContext.Count > 0)
-                {
-                    StopCoroutine("DelayStateChangeFW");
-                    ChangeStateTo("Evade");
-                    preyState = PreyStates.Evade;
-                }
-            }
-
-            yield return null;
-        }
-
-        Debug.Log("Wander: EXIT");
-    }
-    #endregion
-
-    #region Evade
-    public IEnumerator EvadeState()
-    {
-        Debug.Log("Evade: ENTER");
-
-        preyState = PreyStates.Evade;
-        flock.behaviour = EvadeBehaviour;
-
-        StartCoroutine("DelayStateChangeEH");
-
-        while (preyState == PreyStates.Evade)
+        while (preyState == PreyStates.EvadeHide)
         {
             foreach (FlockAgent agent in flock.agents)
             {
@@ -163,40 +118,10 @@ public class PreyStateMachine : Life
 
                 if (filteredContext.Count <= 0)
                 {
-                    StopCoroutine("DelayStateChangeEH");
-                    ChangeStateTo("Flock");
-                    preyState = PreyStates.Flock;
-                }
-            }
-
-            yield return null;
-        }
-
-        Debug.Log("Evade: EXIT");
-    }
-    #endregion
-
-    #region Hide
-    public IEnumerator HideState()
-    {
-        Debug.Log("Hide: ENTER");
-
-        preyState = PreyStates.Hide;
-        flock.behaviour = HideBehaviour;
-
-        StartCoroutine("DelayStateChangeEH");
-
-        while (preyState == PreyStates.Hide)
-        {
-            foreach (FlockAgent agent in flock.agents)
-            {
-                List<Transform> filteredContext = (contextFilter == null) ? flock.areaContext : contextFilter.Filter(agent, flock.areaContext);
-
-                if (filteredContext.Count <= 0)
-                {
-                    StopCoroutine("DelayStateChangeEH");
-                    ChangeStateTo("Flock");
-                    preyState = PreyStates.Flock;
+                    preyState = PreyStates.FlockWander;
+                    ChangeStateTo(PreyStates.FlockWander.ToString());
+                    Debug.Log(filteredContext.Count);
+                    yield return null;
                 }
             }
 
@@ -208,39 +133,9 @@ public class PreyStateMachine : Life
     #endregion
 
     #region State Changing
-    void ChangeStateTo(string methodName)
+    protected void ChangeStateTo(string methodName)
     {
-        StartCoroutine(methodName + "State"); //change the state to the passed value plus "State"
-    }
-
-    public IEnumerator DelayStateChangeFW()
-    {
-        yield return new WaitForSeconds(10);
-
-        if (preyState == PreyStates.Flock)
-        {
-            ChangeStateTo("Wander");
-        }
-        else
-        {
-            ChangeStateTo("Flock");
-        }
-    }
-
-    public IEnumerator DelayStateChangeEH()
-    {
-        Debug.Log("Counting...");
-
-        yield return new WaitForSeconds(10);
-
-        if (preyState == PreyStates.Evade)
-        {
-            ChangeStateTo("Hide");
-        }
-        else
-        {
-            ChangeStateTo("Evade");
-        }
+        StartCoroutine(methodName + "State"); //change the State to the passed value plus "State"
     }
     #endregion
     #endregion
