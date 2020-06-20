@@ -2744,9 +2744,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flock: {fileID: 6487415385857771011}
   contextFilter: {fileID: 11400000, guid: b2cc65a84d0c6af4a9e2fb0c3d539a60, type: 2}
-  maxHealth: 100
-  health: 0
   stateDisplay: {fileID: 825960045}
+  speedMultiplier: 1.3
   prepareAttackTimeValue: 5
   maxAttackTimeValue: 5
   predatorState: 0
@@ -2830,8 +2829,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flock: {fileID: 7845215627943159154}
   contextFilter: {fileID: 11400000, guid: b2cc65a84d0c6af4a9e2fb0c3d539a60, type: 2}
-  maxHealth: 100
-  health: 0
   stateDisplay: {fileID: 1463082693}
   useHurtColor: 1
   hurtColor: {r: 1, g: 0, b: 0, a: 1}
