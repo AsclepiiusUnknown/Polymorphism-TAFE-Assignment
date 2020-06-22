@@ -7,6 +7,7 @@ public class AttackBehaviour : FilteredFlockBehaviour
 {
     public PredatorStateMachine thisPredator;
 
+    //Another instance of the calculate move from within Flock Behaviour which checks for agents of a different flock in its surrounding context and then attempts to chasxe them and eliminate them where possible
     public override Vector2 CalculateMove(FlockAgent agent, List<Transform> context, List<Transform> areaContext, Flock flock)
     {
         List<Transform> areaFilteredContext = (filter == null) ? areaContext : filter.Filter(agent, areaContext);

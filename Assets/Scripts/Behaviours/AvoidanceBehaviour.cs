@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Flock/Behaviour/Avoidance")]
 public class AvoidanceBehaviour : FilteredFlockBehaviour
 {
+    //Another instance of the calculate move from within Flock Behaviour which checks for agents of the same flock in its surrounding context and then moves accorningly to avoid overlapping with the other agents
     public override Vector2 CalculateMove(FlockAgent agent, List<Transform> context, List<Transform> areaContext, Flock flock)
     {
         List<Transform> filteredContext = (filter == null) ? context : filter.Filter(agent, context);

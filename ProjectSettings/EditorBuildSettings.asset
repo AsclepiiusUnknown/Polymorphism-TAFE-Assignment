@@ -6,24 +6,24 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Menu.unity
+    path: Assets/Scenes/Behaviour/Behaviours Menu.unity
     guid: 00d39071d4c7f684bbd88d3ed4a59cd0
   - enabled: 1
-    path: Assets/Scenes/BehaviourScenes/CollisionAvoidance.unity
+    path: Assets/Scenes/Behaviour/BehaviourScenes/CollisionAvoidance.unity
     guid: 9cd340e947392174dacb6c5f74d89719
   - enabled: 1
-    path: Assets/Scenes/BehaviourScenes/Flocking.unity
+    path: Assets/Scenes/Behaviour/BehaviourScenes/Flocking.unity
     guid: 24775f6ac12913d4fa4e849b8ad1ea59
   - enabled: 1
-    path: Assets/Scenes/BehaviourScenes/Evade.unity
+    path: Assets/Scenes/Behaviour/BehaviourScenes/Evade.unity
     guid: 3dcab2a208b09ce4484d550cc5fd1ceb
   - enabled: 1
-    path: Assets/Scenes/BehaviourScenes/Hide.unity
+    path: Assets/Scenes/Behaviour/BehaviourScenes/Hide.unity
     guid: 4c58979ec64e5cc4fb1386315d2509d8
   - enabled: 1
-    path: Assets/Scenes/BehaviourScenes/Wander.unity
+    path: Assets/Scenes/Behaviour/BehaviourScenes/Wander.unity
     guid: 26b1939d34c842f498fbf821d8585d2d
   - enabled: 1
-    path: Assets/Scenes/BehaviourScenes/OffsetPursuit.unity
+    path: Assets/Scenes/Behaviour/BehaviourScenes/OffsetPursuit.unity
     guid: fdcde15d22c4cf741a01fb4da5beeb93
   m_configObjects: {}

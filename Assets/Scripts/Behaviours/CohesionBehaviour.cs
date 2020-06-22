@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Flock/Behaviour/Cohesion")]
 public class CohesionBehaviour : FilteredFlockBehaviour
 {
+    //Another instance of the calculate move from within Flock Behaviour which checks for agents of the same flock in its surrounding context and then move as a single group to appear to be communicating rather than going in random directions
     public override Vector2 CalculateMove(FlockAgent agent, List<Transform> context, List<Transform> areaContext, Flock flock)
     {
         List<Transform> filteredContext = (filter == null) ? context : filter.Filter(agent, context);

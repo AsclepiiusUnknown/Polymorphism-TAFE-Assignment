@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Flock/Behaviour/Area Avoidance")]
 public class AreaAvoidanceBehaviour : FilteredFlockBehaviour
 {
+    //Another instance of the calculate move from within Flock Behaviour which checks for agents of a different flock in its surrounding context and then attempts to move as a flock group around the opposing area and rejoin later
     public override Vector2 CalculateMove(FlockAgent agent, List<Transform> context, List<Transform> areaContext, Flock flock)
     {
         List<Transform> filteredContext = (filter == null) ? areaContext : filter.Filter(agent, areaContext);

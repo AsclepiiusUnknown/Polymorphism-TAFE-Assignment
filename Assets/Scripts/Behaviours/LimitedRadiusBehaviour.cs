@@ -9,6 +9,8 @@ public class LimitedRadiusBehaviour : FlockBehaviour
     public float radius = 15f;
     public float returnPercent = 0.9f;
 
+    //Another instance of the calculate move from within Flock Behaviour which checks for the center of the game and the size of the predetermined radius
+    // it will then use this data to try and stay within that radius using the return percent to decide how successful this is and how often
     public override Vector2 CalculateMove(FlockAgent agent, List<Transform> context, List<Transform> areaContext, Flock flock)
     {
         //Direction towards center
@@ -22,6 +24,7 @@ public class LimitedRadiusBehaviour : FlockBehaviour
         }
 
         return centreOffset;
+        // * Variations:
         //or
         //return centreOffset * t;
         //or

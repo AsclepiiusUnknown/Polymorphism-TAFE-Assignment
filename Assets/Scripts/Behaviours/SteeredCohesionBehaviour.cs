@@ -8,6 +8,8 @@ public class SteeredCohesionBehaviour : FilteredFlockBehaviour
     Vector2 currentVelocity = Vector2.zero;
     public float agentSmoothTime = 0.5f; //lower the faster it turns
 
+    //Another instance of the calculate move from within Flock Behaviour which checks for agents of the same flock in its surrounding context and then moves accorningly 
+    // Has very similar functionality to Cohesion behaviour but it has more control over the direction instead of just going straight until restricted by Limited radius or another opposing behaviour
     public override Vector2 CalculateMove(FlockAgent agent, List<Transform> context, List<Transform> areaContext, Flock flock)
     {
         List<Transform> filteredContext = (filter == null) ? context : filter.Filter(agent, context);

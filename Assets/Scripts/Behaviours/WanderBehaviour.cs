@@ -7,8 +7,8 @@ public class WanderBehaviour : FilteredFlockBehaviour
 {
     Path path = null;
     int? currentWaypoint = null;
-    /////
 
+    //Checks and returns both a vector 2 representing the centre position of the radius and a bool as to whether the radius is being used
     public (Vector2, bool) LimitedRadius(FlockAgent agent)
     {
         //Get dir towards center
@@ -25,6 +25,7 @@ public class WanderBehaviour : FilteredFlockBehaviour
         return (centerOffset, false);
     }
 
+    // Used to Follow a chosen path and check if we need to return back to the first waypoint
     public Vector2 FollowPath(FlockAgent agent)
     {
         if (path == null)
@@ -45,6 +46,7 @@ public class WanderBehaviour : FilteredFlockBehaviour
         return move;
     }
 
+    //Used to find a path to follow and set it to our current path
     public void FindPath(FlockAgent agent, List<Transform> areaContext)
     {
         List<Transform> filteredContext = (filter == null) ? areaContext : filter.Filter(agent, areaContext);
@@ -61,6 +63,7 @@ public class WanderBehaviour : FilteredFlockBehaviour
 
     }
 
+    //Another instance of the calculate move from within Flock Behaviour which checks for agents of the same flock in its surrounding context and uses the above functions to wander accordingly
     public override Vector2 CalculateMove(FlockAgent agent, List<Transform> context, List<Transform> areaContext, Flock flock)
     {
         if (path == null)

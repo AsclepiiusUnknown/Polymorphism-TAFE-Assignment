@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Flock/Filters/Same Flock")]
 public class SameFlockFilter : ContextFilter
 {
+    // A Context filter used to find all of the agents from the same flock and put them in a list of transforms to then be included in other equations
     public override List<Transform> Filter(FlockAgent agent, List<Transform> orignal)
     {
         List<Transform> filtered = new List<Transform>();

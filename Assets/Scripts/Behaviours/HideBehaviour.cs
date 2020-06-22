@@ -9,6 +9,7 @@ public class HideBehaviour : FilteredFlockBehaviour
 
     public float hideBehindObstacleDist = 2f;
 
+    //Another instance of the calculate move from within Flock Behaviour which checks for obstacles in its surrounding context and then goes on the opposite side of the objects to any opposing flocks that it also detects using a context filter
     public override Vector2 CalculateMove(FlockAgent agent, List<Transform> context, List<Transform> areaContext, Flock flock)
     {
         //hide from enemies
